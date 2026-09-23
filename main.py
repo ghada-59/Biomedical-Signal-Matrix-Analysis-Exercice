@@ -22,10 +22,10 @@ st.divider()
 # 1. DATASET INITIALIZATION
 # ------------------------------------------------------------------------------
 D_raw = np.array([
-    [4,  8, 12],  # Patient 1
-    [6, 10, 15],  # Patient 2
-    [5,  7,  9],  # Patient 3
-    [3,  6,  9]   # Patient 4
+    [4,  8, 12],  # Sample 1
+    [6, 10, 15],  # Sample 2
+    [5,  7,  9],  # Sample 3
+    [3,  6,  9]   # Sample 4
 ])
 
 samples = ['Sample_1', 'Sample_2', 'Sample_3', 'Sample_4']
@@ -64,7 +64,7 @@ df_stats = pd.DataFrame({
 D_transpose = D_raw.T
 composite_risk_scores = np.dot(D_raw, P_weights)
 
-df_risk = pd.DataFrame({'Composite Risk Score': composite_risk_scores}, index=samples)
+df_risk = pd.DataFrame({'Weighted Score': composite_risk_scores}, index=samples)
 highest_score_sample = df_risk.idxmax().iloc[0]
 max_score = df_risk.max().iloc[0]
 
@@ -76,13 +76,13 @@ df_severity = pd.DataFrame({'Total Severity Contribution': total_biomarker_sever
 # ------------------------------------------------------------------------------
 
 # Summary
-st.warning(f"🚨 **CRITICAL ALERT:** Highest Risk Patient identified as **{highest_risk_patient}** with a score of **{max_score} points**.")
+st.info(f"Largest weighted score in this synthetic example: **{highest_score_sample} = {max_score}**.")
 
 col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader("📊 1. Synthetic Feature Matrix (D)")
-    df_biomed = pd.DataFrame(D_raw, index=patients, columns=features)
+    df_biomed = pd.DataFrame(D_raw, index=samples, columns=features)
     st.dataframe(df_biomed, use_container_width=True)
     st.caption(f"Matrix Elements Data Type: `{D_raw.dtype}` (Integer-encoded ratio scale data)")
 
@@ -90,10 +90,10 @@ with col_left:
     fig_risk = px.bar(
         df_risk.reset_index(),
         x='index',
-        y='Composite Risk Score',
-        color='Composite Risk Score',
+        y='Weighted Score',
+        color='Weighted Score',
         color_continuous_scale='Reds',
-        labels={'index': 'Patient', 'Composite Risk Score': 'Risk Score'},
+        labels={'index': 'Sample', 'Weighted Score': 'Weighted Score'},
         title="Weighted Score Comparison"
     )
     st.plotly_chart(fig_risk, use_container_width=True)
@@ -103,21 +103,21 @@ with col_right:
     df_transpose = pd.DataFrame(D_transpose, index=['HRV (A)', 'Glucose (B)', 'RRv (C)'], columns=samples)
     st.dataframe(df_transpose, use_container_width=True)
 
-    st.subheader("📈 4. Total Biomarker Cohort Contribution")
+    st.subheader("📈 4. Total Feature Contribution")
     fig_severity = px.bar(
         df_severity.reset_index(),
         x='index',
         y='Total Severity Contribution',
         color='index',
         labels={'index': 'Biomarker Feature'},
-        title="Aggregate Severity per Feature Across Cohort"
+        title="Aggregate Weighted Contribution by Feature"
     )
     st.plotly_chart(fig_severity, use_container_width=True)
 
 st.divider()
 
 # Part 3: Descriptive Statistics Table
-st.subheader("📋 Descriptive Statistics & Signal Variability")
+st.subheader("📋 Descriptive Statistics & Feature Variability")
 st.dataframe(df_stats.round(2).style.highlight_min(subset=['CV (%)'], color='lightgreen').highlight_max(subset=['CV (%)'], color='pink'), use_container_width=True)
 
 st.divider()
@@ -129,9 +129,9 @@ tab1, tab2 = st.tabs(["📊 Matrix Interpretation", "🤖 AI/Engineering Context
 
 with tab1:
     st.markdown("""
-    * **Mean ($\mu$):** Represents baseline physiological signal intensity across the cohort. Feature C exhibits the highest intensity ($\mu = 11.25$).
-    * **Coefficient of Variation ($CV\%$):** Standardizes relative dispersion. **Feature B (Glucose)** ($CV = 19.08\%$) is the most stable biomarker across patients, whereas **Feature A (HRV)** ($CV = 24.85\%$) shows the highest relative inter-patient dispersion.
-    * **Patient Triage:** **Patient 2** requires immediate clinical intervention with a dominant composite risk score of **355 points**.
+    * **Mean ($\mu$):** Summarizes the average value of each synthetic feature.
+    * **Coefficient of Variation ($CV\%$):** Compares relative dispersion between the illustrative features.
+    * **Weighted score:** The dot product $R = D \cdot P$ combines feature values and user-defined weights for this mathematical exercise.
     """)
 
 with tab2:
