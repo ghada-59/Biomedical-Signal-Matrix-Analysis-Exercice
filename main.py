@@ -5,15 +5,15 @@ import plotly.express as px
 
 # Page Configuration
 st.set_page_config(
-    page_title="Biomedical Signal Matrix & Diagnostic Risk Analysis",
+    page_title="Biomedical Feature Matrix & Linear Algebra Analysis",
     page_icon="🧬",
     layout="wide"
 )
 
-st.title("🧬 Biomedical Sensor Signal & Diagnostic Risk Matrix Analysis")
+st.title("🧬 Synthetic Biomedical Feature Matrix Analysis")
 st.markdown("""
 **Domain:** Biomedical Data & AI Engineering  
-This interactive dashboard processes high-dimensional patient vital matrices, analyzes signal variability, and computes composite diagnostic risk scores using linear algebra primitives ($R = D \\cdot P$).
+This interactive dashboard uses a small synthetic feature matrix to explore statistics, matrix operations and weighted linear combinations.
 """)
 
 st.divider()
@@ -28,12 +28,12 @@ D_raw = np.array([
     [3,  6,  9]   # Patient 4
 ])
 
-patients = ['Patient_1', 'Patient_2', 'Patient_3', 'Patient_4']
+samples = ['Sample_1', 'Sample_2', 'Sample_3', 'Sample_4']
 features = ['Feature_A (HRV)', 'Feature_B (Glucose)', 'Feature_C (RRv)']
 
 # Sidebar for Dynamic Diagnostic Weighting
-st.sidebar.header("⚙️ Diagnostic Severity Weights (P)")
-st.sidebar.markdown("Adjust the linear weights applied to each physiological biomarker:")
+st.sidebar.header("⚙️ Feature Weights (P)")
+st.sidebar.markdown("Adjust the weights applied to each illustrative feature:")
 w_a = st.sidebar.slider("Weight Feature A (HRV)", 1, 20, 5)
 w_b = st.sidebar.slider("Weight Feature B (Glucose)", 1, 20, 10)
 w_c = st.sidebar.slider("Weight Feature C (RRv)", 1, 20, 15)
@@ -64,8 +64,8 @@ df_stats = pd.DataFrame({
 D_transpose = D_raw.T
 composite_risk_scores = np.dot(D_raw, P_weights)
 
-df_risk = pd.DataFrame({'Composite Risk Score': composite_risk_scores}, index=patients)
-highest_risk_patient = df_risk.idxmax().iloc[0]
+df_risk = pd.DataFrame({'Composite Risk Score': composite_risk_scores}, index=samples)
+highest_score_sample = df_risk.idxmax().iloc[0]
 max_score = df_risk.max().iloc[0]
 
 total_biomarker_severity = np.sum(D_raw * P_weights, axis=0)
@@ -75,18 +75,18 @@ df_severity = pd.DataFrame({'Total Severity Contribution': total_biomarker_sever
 # LAYOUT & DISPLAY
 # ------------------------------------------------------------------------------
 
-# Critical Alert Banner
+# Summary
 st.warning(f"🚨 **CRITICAL ALERT:** Highest Risk Patient identified as **{highest_risk_patient}** with a score of **{max_score} points**.")
 
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("📊 1. Raw Biomedical Signal Matrix (D)")
+    st.subheader("📊 1. Synthetic Feature Matrix (D)")
     df_biomed = pd.DataFrame(D_raw, index=patients, columns=features)
     st.dataframe(df_biomed, use_container_width=True)
     st.caption(f"Matrix Elements Data Type: `{D_raw.dtype}` (Integer-encoded ratio scale data)")
 
-    st.subheader("🎯 2. Composite Patient Risk Scores (R = D · P)")
+    st.subheader("🎯 2. Weighted Composite Scores (R = D · P)")
     fig_risk = px.bar(
         df_risk.reset_index(),
         x='index',
@@ -94,13 +94,13 @@ with col_left:
         color='Composite Risk Score',
         color_continuous_scale='Reds',
         labels={'index': 'Patient', 'Composite Risk Score': 'Risk Score'},
-        title="Diagnostic Patient Severity Ranking"
+        title="Weighted Score Comparison"
     )
     st.plotly_chart(fig_risk, use_container_width=True)
 
 with col_right:
     st.subheader("🔄 3. Transposed Matrix (Dᵀ)")
-    df_transpose = pd.DataFrame(D_transpose, index=['HRV (A)', 'Glucose (B)', 'RRv (C)'], columns=patients)
+    df_transpose = pd.DataFrame(D_transpose, index=['HRV (A)', 'Glucose (B)', 'RRv (C)'], columns=samples)
     st.dataframe(df_transpose, use_container_width=True)
 
     st.subheader("📈 4. Total Biomarker Cohort Contribution")
@@ -122,10 +122,10 @@ st.dataframe(df_stats.round(2).style.highlight_min(subset=['CV (%)'], color='lig
 
 st.divider()
 
-# Part 4: Clinical & AI Engineering Insights
-st.subheader("💡 Clinical Interpretation & Health AI Applications")
+# Part 4: Interpretation & AI Engineering Context
+st.subheader("💡 Interpretation & AI/Engineering Context")
 
-tab1, tab2 = st.tabs(["🩺 Clinical Interpretation", "🤖 AI Engineering Applications"])
+tab1, tab2 = st.tabs(["📊 Matrix Interpretation", "🤖 AI/Engineering Context"])
 
 with tab1:
     st.markdown("""
