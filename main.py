@@ -29,9 +29,9 @@ D_raw = np.array([
 ])
 
 samples = ['Sample_1', 'Sample_2', 'Sample_3', 'Sample_4']
-features = ['Feature_A (HRV)', 'Feature_B (Glucose)', 'Feature_C (RRv)']
+features = ['Feature_A', 'Feature_B', 'Feature_C']
 
-# Sidebar for Dynamic Diagnostic Weighting
+# Sidebar for Dynamic Illustrative Weighting
 st.sidebar.header("⚙️ Feature Weights (P)")
 st.sidebar.markdown("Adjust the weights applied to each illustrative feature:")
 w_a = st.sidebar.slider("Weight Feature A (HRV)", 1, 20, 5)
@@ -84,7 +84,7 @@ with col_left:
     st.subheader("📊 1. Synthetic Feature Matrix (D)")
     df_biomed = pd.DataFrame(D_raw, index=samples, columns=features)
     st.dataframe(df_biomed, use_container_width=True)
-    st.caption(f"Matrix Elements Data Type: `{D_raw.dtype}` (Integer-encoded ratio scale data)")
+    st.caption(f"Matrix Elements Data Type: `{D_raw.dtype}` (Synthetic values with no clinical units)")
 
     st.subheader("🎯 2. Weighted Composite Scores (R = D · P)")
     fig_risk = px.bar(
