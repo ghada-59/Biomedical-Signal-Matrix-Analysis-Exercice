@@ -13,7 +13,7 @@ st.set_page_config(
 st.title("🧬 Synthetic Biomedical Feature Matrix Analysis")
 st.markdown("""
 **Domain:** Biomedical Data & AI Engineering  
-This interactive dashboard uses a small synthetic feature matrix to explore statistics, matrix operations and weighted linear combinations.
+This interactive dashboard uses a small synthetic feature matrix to explore descriptive statistics, matrix operations and weighted linear combinations.
 """)
 
 st.divider()
@@ -34,9 +34,9 @@ features = ['Feature_A', 'Feature_B', 'Feature_C']
 # Sidebar for Dynamic Illustrative Weighting
 st.sidebar.header("⚙️ Feature Weights (P)")
 st.sidebar.markdown("Adjust the weights applied to each illustrative feature:")
-w_a = st.sidebar.slider("Weight Feature A (HRV)", 1, 20, 5)
-w_b = st.sidebar.slider("Weight Feature B (Glucose)", 1, 20, 10)
-w_c = st.sidebar.slider("Weight Feature C (RRv)", 1, 20, 15)
+w_a = st.sidebar.slider("Weight Feature A", 1, 20, 5)
+w_b = st.sidebar.slider("Weight Feature B", 1, 20, 10)
+w_c = st.sidebar.slider("Weight Feature C", 1, 20, 15)
 
 P_weights = np.array([w_a, w_b, w_c])
 
@@ -62,14 +62,14 @@ df_stats = pd.DataFrame({
 
 # Part 2: Linear Algebra Operations
 D_transpose = D_raw.T
-composite_risk_scores = np.dot(D_raw, P_weights)
+weighted_scores = np.dot(D_raw, P_weights)
 
-df_risk = pd.DataFrame({'Weighted Score': composite_risk_scores}, index=samples)
+df_risk = pd.DataFrame({'Weighted Score': weighted_scores}, index=samples)
 highest_score_sample = df_risk.idxmax().iloc[0]
 max_score = df_risk.max().iloc[0]
 
-total_biomarker_severity = np.sum(D_raw * P_weights, axis=0)
-df_severity = pd.DataFrame({'Total Severity Contribution': total_biomarker_severity}, index=features)
+feature_weighted_totals = np.sum(D_raw * P_weights, axis=0)
+df_severity = pd.DataFrame({'Total Weighted Contribution': feature_weighted_totals}, index=features)
 
 # ------------------------------------------------------------------------------
 # LAYOUT & DISPLAY
@@ -100,17 +100,17 @@ with col_left:
 
 with col_right:
     st.subheader("🔄 3. Transposed Matrix (Dᵀ)")
-    df_transpose = pd.DataFrame(D_transpose, index=['HRV (A)', 'Glucose (B)', 'RRv (C)'], columns=samples)
+    df_transpose = pd.DataFrame(D_transpose, index=features, columns=samples)
     st.dataframe(df_transpose, use_container_width=True)
 
     st.subheader("📈 4. Total Feature Contribution")
     fig_severity = px.bar(
         df_severity.reset_index(),
         x='index',
-        y='Total Severity Contribution',
+        y='Total Weighted Contribution',
         color='index',
         labels={'index': 'Biomarker Feature'},
-        title="Aggregate Weighted Contribution by Feature"
+        title="Weighted Contribution by Feature"
     )
     st.plotly_chart(fig_severity, use_container_width=True)
 
@@ -136,6 +136,8 @@ with tab1:
 
 with tab2:
     st.markdown("""
-    1. **Neural Network Layers (1D-CNNs / MLPs):** Dot product transformations ($\mathbf{W}^T \mathbf{X} + \mathbf{b}$) are the fundamental operation in deep learning architectures used to process 1D physiological signals for continuous arrhythmia detection.
-    2. **Dimensionality Reduction (PCA / SVD):** Singular Value Decomposition ($D = U \Sigma V^T$) compresses dynamic biomarker matrices to reduce high-dimensional patient data into informative feature spaces without significant signal loss.
+    1. **Neural-network foundations:** Dot products are a core linear-algebra operation used in models such as MLPs.
+    2. **Dimensionality reduction:** Matrix decompositions such as SVD can represent data in lower-dimensional spaces.
+
+    These are conceptual connections only; this exercise does not train a neural network or perform dimensionality reduction.
     """)
